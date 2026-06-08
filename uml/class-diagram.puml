@@ -1,0 +1,209 @@
+@startuml GayrimenkulYonetimSistemi
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classFontName Arial
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #0f3460
+    HeaderBackgroundColor #0f3460
+    HeaderFontColor White
+    ArrowColor #444444
+}
+skinparam package {
+    BorderColor #888888
+    FontColor #333333
+    FontSize 13
+    FontStyle bold
+}
+skinparam enum {
+    BackgroundColor #fffbe6
+    BorderColor #e6a817
+    HeaderBackgroundColor #e6a817
+    HeaderFontColor White
+}
+
+' ─────────────────────────────
+' ENTITY KATMANI
+' ─────────────────────────────
+package "entity" {
+
+    enum IlanTipi {
+        SATILIK
+        KIRALIK
+    }
+
+    enum Kategori {
+        DAIRE
+        VILLA
+        ARSA
+        OFIS
+        DUKKAN
+    }
+
+    class Property {
+        - id : Long
+        - baslik : String
+        - fiyat : Double
+        - tipi : IlanTipi
+        - kategori : Kategori
+        - metrekare : Integer
+        - odaSayisi : Integer
+        - adres : String
+        - sehir : String
+        - aciklama : String
+        - aktif : boolean
+        - kayitTarihi : LocalDate
+        - agent : Agent
+    }
+
+    class Agent {
+        - id : Long
+        - ad : String
+        - soyad : String
+        - telefon : String
+        - email : String
+        - ofis : String
+        - ilanlar : List<Property>
+        + getTamAd() : String
+    }
+}
+
+' ─────────────────────────────
+' REPOSITORY KATMANI
+' ─────────────────────────────
+package "repository" {
+
+    interface PropertyRepository {
+        + findByAktifTrue() : List<Property>
+        + findByTipiAndAktifTrue(tipi) : List<Property>
+        + findByKategoriAndAktifTrue(kategori) : List<Property>
+        + findBySehirContainingIgnoreCaseAndAktifTrue(sehir) : List<Property>
+        + countAktif() : long
+        + countSatilik() : long
+        + countKiralik() : long
+    }
+
+    interface AgentRepository {
+        + findByOfisContainingIgnoreCase(ofis) : List<Agent>
+        + existsByEmail(email) : boolean
+    }
+}
+
+' ─────────────────────────────
+' SERVICE KATMANI
+' ─────────────────────────────
+package "service" {
+
+    class PropertyService {
+        - propertyRepository : PropertyRepository
+        + tumIlanlar() : List<Property>
+        + aktifIlanlar() : List<Property>
+        + ilanBul(id : Long) : Optional<Property>
+        + ilanKaydet(property : Property) : Property
+        + ilanSil(id : Long) : void
+        + tipineGoreFilt(tipi : IlanTipi) : List<Property>
+        + kategoriyeGoreFilt(kategori : Kategori) : List<Property>
+        + sehireGoreFilt(sehir : String) : List<Property>
+        + toplamAktif() : long
+        + toplamSatilik() : long
+        + toplamKiralik() : long
+    }
+
+    class AgentService {
+        - agentRepository : AgentRepository
+        + tumDanismanlar() : List<Agent>
+        + danismanBul(id : Long) : Optional<Agent>
+        + danismanKaydet(agent : Agent) : Agent
+        + danismanSil(id : Long) : void
+        + emailMevcut(email : String) : boolean
+        + toplamDanisman() : long
+    }
+}
+
+' ─────────────────────────────
+' CONTROLLER KATMANI
+' ─────────────────────────────
+package "controller" {
+
+    class HomeController {
+        - propertyService : PropertyService
+        - agentService : AgentService
+        + anaSayfa(model : Model) : String
+    }
+
+    class PropertyController {
+        - propertyService : PropertyService
+        - agentService : AgentService
+        + liste(model, tipi, kategori, sehir) : String
+        + detay(id : Long, model : Model) : String
+        + yeniForm(model : Model) : String
+        + kaydet(property, result, model, redir) : String
+        + duzenleForm(id : Long, model : Model) : String
+        + guncelle(id, property, result, model, redir) : String
+        + sil(id : Long, redir) : String
+    }
+
+    class AgentController {
+        - agentService : AgentService
+        + liste(model : Model) : String
+        + yeniForm(model : Model) : String
+        + kaydet(agent, result, redir) : String
+        + duzenleForm(id : Long, model : Model) : String
+        + guncelle(id, agent, result, redir) : String
+        + sil(id : Long, redir) : String
+    }
+
+    class GlobalExceptionHandler {
+        + handleNotFound(ex, model) : String
+        + handleGeneral(ex, model) : String
+    }
+
+    class CustomErrorController {
+        + handleError(request) : String
+    }
+}
+
+' ─────────────────────────────
+' CONFIG KATMANI
+' ─────────────────────────────
+package "config" {
+
+    class AgentConverter {
+        - agentRepository : AgentRepository
+        + convert(source : String) : Agent
+    }
+}
+
+' ─────────────────────────────
+' İLİŞKİLER
+' ─────────────────────────────
+
+' Entity ilişkileri
+Agent "1" o--> "0..*" Property : ilanlar\n(OneToMany)
+Property "0..*" --> "1" Agent : agent\n(ManyToOne)
+Property --> IlanTipi
+Property --> Kategori
+
+' Repository → Entity
+PropertyRepository ..> Property : <<manages>>
+AgentRepository    ..> Agent    : <<manages>>
+
+' Service → Repository (Dependency Injection)
+PropertyService --> PropertyRepository : <<inject>>
+AgentService    --> AgentRepository    : <<inject>>
+
+' Controller → Service (Dependency Injection)
+PropertyController --> PropertyService : <<inject>>
+PropertyController --> AgentService    : <<inject>>
+HomeController     --> PropertyService : <<inject>>
+HomeController     --> AgentService    : <<inject>>
+AgentController    --> AgentService    : <<inject>>
+
+' Config
+AgentConverter --> AgentRepository : <<inject>>
+
+@enduml
