@@ -2,29 +2,54 @@
 
 skinparam classAttributeIconSize 0
 skinparam classFontSize 12
+skinparam classHeaderFontSize 13
+skinparam classHeaderFontStyle bold
 skinparam classFontName Arial
 skinparam packageStyle rectangle
 skinparam linetype ortho
 skinparam shadowing false
+skinparam defaultFontName Arial
+
 skinparam class {
-    BackgroundColor White
-    BorderColor #0f3460
-    HeaderBackgroundColor #0f3460
+    BackgroundColor #f0f4ff
+    BorderColor #2d5fa6
+    HeaderBackgroundColor #2d5fa6
     HeaderFontColor White
-    ArrowColor #444444
+    HeaderFontSize 13
+    AttributeFontColor #1a1a2e
+    FontColor #1a1a2e
+    ArrowColor #2d5fa6
+    BorderThickness 1.5
 }
 skinparam package {
-    BorderColor #888888
-    FontColor #333333
-    FontSize 13
+    BackgroundColor #fafafa
+    BorderColor #aaaaaa
+    BorderThickness 1.5
+    FontColor #222222
+    FontSize 14
     FontStyle bold
 }
 skinparam enum {
-    BackgroundColor #fffbe6
-    BorderColor #e6a817
-    HeaderBackgroundColor #e6a817
+    BackgroundColor #fff8e1
+    BorderColor #c68b00
+    HeaderBackgroundColor #c68b00
     HeaderFontColor White
+    HeaderFontSize 13
+    AttributeFontColor #3d2800
+    FontColor #3d2800
 }
+skinparam interface {
+    BackgroundColor #e8f5e9
+    BorderColor #2e7d32
+    HeaderBackgroundColor #2e7d32
+    HeaderFontColor White
+    HeaderFontSize 13
+    AttributeFontColor #1a3320
+    FontColor #1a3320
+}
+skinparam ArrowFontSize 11
+skinparam ArrowFontColor #444444
+skinparam ArrowThickness 1.5
 
 ' ─────────────────────────────
 ' ENTITY KATMANI
