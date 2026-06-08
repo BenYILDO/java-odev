@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-ul"></i> İlanlar
+            <span th:if="${aktifFiltre}" class="badge bg-secondary fs-6" th:text="'Filtre: ' + ${aktifFiltre}"></span>
+        </h2>
+        <a th:href="@{/ilanlar/yeni}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Yeni İlan
+        </a>
+    </div>
+
+    <!-- Filtreler -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tip</label>
+                    <div class="btn-group w-100">
+                        <a th:href="@{/ilanlar}" class="btn btn-outline-secondary btn-sm">Tümü</a>
+                        <a th:href="@{/ilanlar(tipi='SATILIK')}" class="btn btn-outline-success btn-sm">Satılık</a>
+                        <a th:href="@{/ilanlar(tipi='KIRALIK')}" class="btn btn-outline-primary btn-sm">Kiralık</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Kategori</label>
+                    <div class="btn-group flex-wrap w-100">
+                        <a th:href="@{/ilanlar(kategori='DAIRE')}" class="btn btn-outline-dark btn-sm">Daire</a>
+                        <a th:href="@{/ilanlar(kategori='VILLA')}" class="btn btn-outline-dark btn-sm">Villa</a>
+                        <a th:href="@{/ilanlar(kategori='ARSA')}" class="btn btn-outline-dark btn-sm">Arsa</a>
+                        <a th:href="@{/ilanlar(kategori='OFIS')}" class="btn btn-outline-dark btn-sm">Ofis</a>
+                        <a th:href="@{/ilanlar(kategori='DUKKAN')}" class="btn btn-outline-dark btn-sm">Dükkan</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <form th:action="@{/ilanlar}" method="get">
+                        <label class="form-label fw-bold">Şehir Ara</label>
+                        <div class="input-group">
+                            <input type="text" name="sehir" class="form-control" placeholder="İstanbul, İzmir...">
+                            <button class="btn btn-dark" type="submit"><i class="bi bi-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/ilanlar}" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-x-circle"></i> Temizle
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İlan Tablosu -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Başlık</th>
+                            <th>Tip</th>
+                            <th>Kategori</th>
+                            <th>Şehir</th>
+                            <th>m²</th>
+                            <th>Fiyat</th>
+                            <th>Danışman</th>
+                            <th class="text-center">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${ilanlar}">
+                            <td th:text="${p.id}"></td>
+                            <td>
+                                <a th:href="@{/ilanlar/{id}(id=${p.id})}" class="text-decoration-none fw-bold"
+                                   th:text="${p.baslik}"></a>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${p.tipi.name() == 'SATILIK'} ? 'bg-success' : 'bg-primary'"
+                                      th:text="${p.tipi.name()}"></span>
+                            </td>
+                            <td><span class="badge bg-secondary" th:text="${p.kategori.name()}"></span></td>
+                            <td th:text="${p.sehir}"></td>
+                            <td th:text="${p.metrekare} + ' m²'"></td>
+                            <td class="fw-bold text-danger"
+                                th:text="${#numbers.formatDecimal(p.fiyat, 0, 'COMMA', 0, 'POINT')} + ' ₺'"></td>
+                            <td th:text="${p.agent != null ? p.agent.tamAd : '-'}"></td>
+                            <td class="text-center">
+                                <a th:href="@{/ilanlar/{id}/duzenle(id=${p.id})}"
+                                   class="btn btn-sm btn-warning me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/ilanlar/{id}/sil(id=${p.id})}" method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Bu ilanı silmek istediğinize emin misiniz?')">
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(ilanlar)}">
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block"></i>
+                                Bu kritere uygun ilan bulunamadı.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

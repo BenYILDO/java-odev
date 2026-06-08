@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="mb-3">
+        <a th:href="@{/ilanlar}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> İlanlar
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-building"></i>
+                <span th:text="${property.id == null} ? 'Yeni İlan Ekle' : 'İlanı Düzenle'"></span>
+            </h4>
+        </div>
+        <div class="card-body">
+            <form th:if="${property.id == null}"
+                  th:action="@{/ilanlar/kaydet}" th:object="${property}" method="post">
+                <div th:replace="~{property/form :: formFields}"></div>
+            </form>
+            <form th:if="${property.id != null}"
+                  th:action="@{/ilanlar/{id}/guncelle(id=${property.id})}" th:object="${property}" method="post">
+                <div th:replace="~{property/form :: formFields}"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Form alanları fragment -->
+    <div th:fragment="formFields">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label fw-bold">Başlık *</label>
+                <input type="text" th:field="*{baslik}" class="form-control"
+                       th:classappend="${#fields.hasErrors('baslik')} ? 'is-invalid'" placeholder="İlan başlığı">
+                <div class="invalid-feedback" th:errors="*{baslik}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">İlan Tipi *</label>
+                <select th:field="*{tipi}" class="form-select"
+                        th:classappend="${#fields.hasErrors('tipi')} ? 'is-invalid'">
+                    <option value="">-- Seçiniz --</option>
+                    <option th:each="t : ${ilanTipleri}" th:value="${t}" th:text="${t}"></option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{tipi}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Kategori *</label>
+                <select th:field="*{kategori}" class="form-select"
+                        th:classappend="${#fields.hasErrors('kategori')} ? 'is-invalid'">
+                    <option value="">-- Seçiniz --</option>
+                    <option th:each="k : ${kategoriler}" th:value="${k}" th:text="${k}"></option>
+                </select>
+                <div class="invalid-feedback" th:errors="*{kategori}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Fiyat (₺) *</label>
+                <input type="number" th:field="*{fiyat}" class="form-control" step="0.01"
+                       th:classappend="${#fields.hasErrors('fiyat')} ? 'is-invalid'" placeholder="0.00">
+                <div class="invalid-feedback" th:errors="*{fiyat}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Metrekare</label>
+                <input type="number" th:field="*{metrekare}" class="form-control"
+                       th:classappend="${#fields.hasErrors('metrekare')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{metrekare}"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Oda Sayısı</label>
+                <input type="number" th:field="*{odaSayisi}" class="form-control" placeholder="0 = Oda yok">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Şehir *</label>
+                <input type="text" th:field="*{sehir}" class="form-control"
+                       th:classappend="${#fields.hasErrors('sehir')} ? 'is-invalid'" placeholder="İstanbul">
+                <div class="invalid-feedback" th:errors="*{sehir}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Adres *</label>
+                <input type="text" th:field="*{adres}" class="form-control"
+                       th:classappend="${#fields.hasErrors('adres')} ? 'is-invalid'" placeholder="Cadde, Sokak, No">
+                <div class="invalid-feedback" th:errors="*{adres}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Sorumlu Danışman</label>
+                <select th:field="*{agent}" class="form-select">
+                    <option value="">-- Danışman Seç --</option>
+                    <option th:each="a : ${danismanlar}"
+                            th:value="${a.id}"
+                            th:text="${a.tamAd} + ' (' + ${a.ofis} + ')'"></option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Durum</label>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" th:field="*{aktif}" id="aktif">
+                    <label class="form-check-label" for="aktif">Aktif (yayında)</label>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-bold">Açıklama</label>
+                <textarea th:field="*{aciklama}" class="form-control" rows="4"
+                          placeholder="Mülk hakkında detaylı bilgi..."></textarea>
+            </div>
+
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-success btn-lg me-2">
+                    <i class="bi bi-save"></i> Kaydet
+                </button>
+                <a th:href="@{/ilanlar}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-x"></i> İptal
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

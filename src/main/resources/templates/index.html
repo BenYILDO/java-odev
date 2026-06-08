@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <!-- Hero -->
+    <div class="p-5 mb-4 bg-dark text-white rounded-3">
+        <div class="container-fluid py-3">
+            <h1 class="display-5 fw-bold"><i class="bi bi-building-fill"></i> Emlak Yönetim Sistemi</h1>
+            <p class="col-md-8 fs-4">Satılık ve kiralık mülkleri yönetin, danışmanlarınızı takip edin.</p>
+            <a th:href="@{/ilanlar}" class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-search"></i> İlanları Görüntüle
+            </a>
+            <a th:href="@{/ilanlar/yeni}" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Yeni İlan Ekle
+            </a>
+        </div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary p-4 text-center">
+                <div class="fs-1 fw-bold" th:text="${toplamIlan}">0</div>
+                <div><i class="bi bi-building"></i> Toplam İlan</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-success p-4 text-center">
+                <div class="fs-1 fw-bold" th:text="${toplamSatilik}">0</div>
+                <div><i class="bi bi-tag"></i> Satılık</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-info p-4 text-center">
+                <div class="fs-1 fw-bold" th:text="${toplamKiralik}">0</div>
+                <div><i class="bi bi-key"></i> Kiralık</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning p-4 text-center">
+                <div class="fs-1 fw-bold" th:text="${toplamDanisman}">0</div>
+                <div><i class="bi bi-person-badge"></i> Danışman</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son İlanlar -->
+    <h3 class="mb-3"><i class="bi bi-clock-history"></i> Son İlanlar</h3>
+    <div class="row g-3">
+        <div class="col-md-4" th:each="p : ${sonIlanlar}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <span class="badge mb-2"
+                          th:classappend="${p.tipi.name() == 'SATILIK'} ? 'bg-success' : 'bg-primary'"
+                          th:text="${p.tipi.name()}"></span>
+                    <span class="badge bg-secondary mb-2 ms-1" th:text="${p.kategori.name()}"></span>
+                    <h5 class="card-title" th:text="${p.baslik}">Başlık</h5>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt"></i> <span th:text="${p.sehir}"></span>
+                        &nbsp;|&nbsp;
+                        <i class="bi bi-rulers"></i> <span th:text="${p.metrekare}"></span> m²
+                    </p>
+                    <div class="price" th:text="${#numbers.formatDecimal(p.fiyat, 0, 'COMMA', 0, 'POINT')} + ' ₺'"></div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a th:href="@{/ilanlar/{id}(id=${p.id})}" class="btn btn-sm btn-outline-dark">
+                        <i class="bi bi-eye"></i> İncele
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(sonIlanlar)}" class="col-12">
+            <p class="text-muted">Henüz ilan bulunmamaktadır.</p>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

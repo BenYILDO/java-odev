@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+
+    <div class="mb-3">
+        <a th:href="@{/ilanlar}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> İlanlar
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="badge fs-6"
+                              th:classappend="${property.tipi.name() == 'SATILIK'} ? 'bg-success' : 'bg-primary'"
+                              th:text="${property.tipi.name()}"></span>
+                        <span class="badge bg-secondary fs-6 ms-1" th:text="${property.kategori.name()}"></span>
+                        <span th:if="${!property.aktif}" class="badge bg-danger fs-6 ms-1">PASİF</span>
+                    </div>
+                    <h2 class="card-title" th:text="${property.baslik}"></h2>
+                    <div class="price mb-3"
+                         th:text="${#numbers.formatDecimal(property.fiyat, 0, 'COMMA', 0, 'POINT')} + ' ₺'"></div>
+
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="text-muted">Şehir</div>
+                            <div class="fw-bold"><i class="bi bi-geo-alt"></i> <span th:text="${property.sehir}"></span></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted">Adres</div>
+                            <div class="fw-bold" th:text="${property.adres}"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted">Metrekare</div>
+                            <div class="fw-bold" th:text="${property.metrekare} + ' m²'"></div>
+                        </div>
+                        <div class="col-6" th:if="${property.odaSayisi != null and property.odaSayisi > 0}">
+                            <div class="text-muted">Oda Sayısı</div>
+                            <div class="fw-bold" th:text="${property.odaSayisi} + '+1'"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted">Kayıt Tarihi</div>
+                            <div class="fw-bold" th:text="${#temporals.format(property.kayitTarihi, 'dd.MM.yyyy')}"></div>
+                        </div>
+                    </div>
+
+                    <div th:if="${property.aciklama != null}" class="mt-3">
+                        <hr>
+                        <h5>Açıklama</h5>
+                        <p th:text="${property.aciklama}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card" th:if="${property.agent != null}">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-person-badge"></i> Sorumlu Danışman
+                </div>
+                <div class="card-body">
+                    <h5 th:text="${property.agent.tamAd}"></h5>
+                    <p><i class="bi bi-telephone"></i> <span th:text="${property.agent.telefon}"></span></p>
+                    <p><i class="bi bi-envelope"></i> <span th:text="${property.agent.email}"></span></p>
+                    <p><i class="bi bi-building"></i> <span th:text="${property.agent.ofis}"></span></p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <a th:href="@{/ilanlar/{id}/duzenle(id=${property.id})}"
+                       class="btn btn-warning w-100 mb-2">
+                        <i class="bi bi-pencil"></i> Düzenle
+                    </a>
+                    <form th:action="@{/ilanlar/{id}/sil(id=${property.id})}" method="post"
+                          onsubmit="return confirm('Bu ilanı silmek istediğinize emin misiniz?')">
+                        <button class="btn btn-danger w-100">
+                            <i class="bi bi-trash"></i> Sil
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
