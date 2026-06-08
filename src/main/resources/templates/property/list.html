@@ -85,7 +85,7 @@
                             </td>
                             <td><span class="badge bg-secondary" th:text="${p.kategori.name()}"></span></td>
                             <td th:text="${p.sehir}"></td>
-                            <td th:text="${p.metrekare} + ' m²'"></td>
+                            <td th:text="${p.metrekare != null} ? ${p.metrekare} + ' m²' : '-'"></td>
                             <td class="fw-bold text-danger"
                                 th:text="${#numbers.formatDecimal(p.fiyat, 0, 'COMMA', 0, 'POINT')} + ' ₺'"></td>
                             <td th:text="${p.agent != null ? p.agent.tamAd : '-'}"></td>
